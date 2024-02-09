@@ -21,6 +21,7 @@ Install the bundle for Composer !! as is still on beta version !!
   NEOX_ENCRY_DSN=Halite://login:[password]@stndalone
   ....
 ````
+**We have only implemented Halite service to Crypt / unCrypt**
 
 **NOTE:** _You may need to use [ symfony composer dump-autoload ] to reload autoloading_
 
