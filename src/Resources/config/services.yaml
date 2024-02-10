@@ -29,4 +29,11 @@ services:
     NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Services\TestService:
     
 #    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\EventSubscriber\NeoxDoctrineSecureSubscriber:
+    
+    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Command\NeoxEncryptorStatusCommand:
+        tags:
+            - name: 'console.command'
         
+#    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Command\Helper\helperCommand:
+#        arguments:
+#            $doctrine: Doctrine\Persistence\ManagerRegistry

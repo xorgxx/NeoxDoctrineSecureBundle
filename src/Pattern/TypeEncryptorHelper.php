@@ -22,21 +22,8 @@
         // \x2a\x2a\x40\x23\x24\x23\x2a\x23\x26\x25\x26\x40\x25\x26\x5e\x40 = **@#$#*#&%&@$&^@
         private const SALT = "**@#$#*#&%&@$&^@";
         
-        public function __construct(private Dsn $dsn){}
-        
-        /**
-         * @throws InvalidType
-         * @throws InvalidSignature
-         * @throws InvalidDigestLength
-         * @throws \SodiumException
-         * @throws InvalidSalt
-         * @throws InvalidKey
-         * @throws InvalidMessage
-         * @throws CannotPerformOperation
-         */
-        public function encryptHaliteString($value): string{
-            [$encryptionKey, $message]  = $this->getEncryptionKey($value);
-            return Crypto::encrypt($message, $encryptionKey);
+        public function __construct(private Dsn $dsn)
+        {
         }
         
         /**
@@ -49,15 +36,37 @@
          * @throws InvalidMessage
          * @throws CannotPerformOperation
          */
-        public function decryptHaliteString($value): string{
+        public function encryptHaliteString($value): string
+        {
             $Halite = Halite::VERSION_PREFIX;
-          
+            // if it is already Encrypted then Decrypted
+            if (!preg_match("/^{$Halite}/", $value)) {
+                [$encryptionKey, $message] = $this->getEncryptionKey($value);
+                return Crypto::encrypt($message, $encryptionKey);
+            }
+        }
+        
+        /**
+         * @throws InvalidType
+         * @throws InvalidSignature
+         * @throws InvalidDigestLength
+         * @throws \SodiumException
+         * @throws InvalidSalt
+         * @throws InvalidKey
+         * @throws InvalidMessage
+         * @throws CannotPerformOperation
+         */
+        public function decryptHaliteString($value): string
+        {
+            $Halite = Halite::VERSION_PREFIX;
+            
             // only for testing purpose
-//            $value = "dede";
-//            $value = $this->encryptHaliteString($value);
-
+            // $value = "dede";
+            // $value = $this->encryptHaliteString($value);
+            
+            // if it is already Encrypted then Decrypted
             if (preg_match("/^{$Halite}/", $value)) {
-                [$encryptionKey, $message]  = $this->getEncryptionKey($value);
+                [$encryptionKey, $message] = $this->getEncryptionKey($value);
                 return Crypto::decrypt($message->getString(), $encryptionKey)->getString();
             }
             return $value;
@@ -71,9 +80,9 @@
          */
         private function getEncryptionKey(string $msg = ""): array
         {
-            $key            = new HiddenString($this->dsn->getPassword());
-            $message        = new HiddenString($msg);
-            $encryptionKey  = KeyFactory::deriveEncryptionKey($key, self::SALT);
+            $key = new HiddenString($this->dsn->getPassword());
+            $message = new HiddenString($msg);
+            $encryptionKey = KeyFactory::deriveEncryptionKey($key, self::SALT);
             
             return [$encryptionKey, $message];
         }
