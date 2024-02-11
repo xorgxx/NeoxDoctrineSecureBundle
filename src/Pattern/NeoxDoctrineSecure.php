@@ -18,11 +18,6 @@
          */
         public mixed $cachedEntity;
         
-        /**
-         * @var array|mixed
-         */
-        public mixed $ParametersBag;
-        
         private Dsn $dsn;
         
         
@@ -30,7 +25,8 @@
         {
         }
 
-        public function setEntityConvert($entity, $action){
+        public function setEntityConvert($entity, $action): string
+        {
             if ($Entity    = $this->entityManager->getRepository($entity)->findall()) {
                 foreach ($Entity as $item) {
                     if ($action === "Decrypt") {
@@ -44,6 +40,7 @@
             }
             return "ok";
         }
+        
         /**
          * @throws ReflectionException
          */
@@ -70,7 +67,6 @@
         
         private function processFields($entity, callable $processor): void
         {
-            
             foreach ($this->reflectionClass->getProperties() as $property) {
                 $encryptAttribute = $property->getAttributes(neoxEncryptor::class)[0] ?? null;
                 if ($encryptAttribute !== null) {
@@ -122,6 +118,7 @@
             $this->getDsn($this->parameterBag->get("neox_doctrine_secure.neox_dsn"));
             $service            = $this->dsn->getScheme() ?? "Defuse";
             // build path to services encrypt for windows or linux
+            // NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\Services
             $parts              = ["NeoxDoctrineSecure", "NeoxDoctrineSecureBundle", "Pattern", "Services"];
             $namespace          = implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
             
