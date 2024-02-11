@@ -18,7 +18,7 @@ Install the bundle for Composer !! as is still on beta version !!
 .env file
 ````
   ....
-  NEOX_ENCRY_DSN=Halite://login:[password]@stndalone
+  NEOX_ENCRY_DSN=Halite://login:[password]@standalone
   ....
 ````
 **We have only implemented Halite service to Crypt / unCrypt**

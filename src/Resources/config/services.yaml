@@ -30,7 +30,10 @@ services:
     
 #    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\EventSubscriber\NeoxDoctrineSecureSubscriber:
     
-    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Command\NeoxEncryptorStatusCommand:
+    NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Command\NeoxEncryptorWasaaaaCommand:
+#        arguments:
+#            - NeoxDoctrineSecure\NeoxDoctrineSecureBundle\command\helperCommand
+#            - NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure
         tags:
             - name: 'console.command'
         

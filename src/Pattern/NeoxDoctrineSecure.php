@@ -2,6 +2,7 @@
     
     namespace NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern;
     
+    use Doctrine\ORM\EntityManagerInterface;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Attribute\neoxEncryptor;
     use ReflectionClass;
     use ReflectionException;
@@ -9,9 +10,6 @@
     
     final class NeoxDoctrineSecure
     {
-        
-
-        
         public int $counterSecure = 0;
         private ReflectionClass $reflectionClass;
         
@@ -28,17 +26,30 @@
         private Dsn $dsn;
         
         
-        public function __construct(readonly ParameterBagInterface $parameterBag)
+        public function __construct(readonly ParameterBagInterface $parameterBag, readonly EntityManagerInterface $entityManager)
         {
         }
 
-        
+        public function setEntityConvert($entity, $action){
+            if ($Entity    = $this->entityManager->getRepository($entity)->findall()) {
+                foreach ($Entity as $item) {
+                    if ($action === "Decrypt") {
+                        $this->decryptFields($item);
+                    }else{
+                        $this->encryptFields($item);
+                    }
+                    $this->entityManager->persist($item);
+                }
+                $this->entityManager->flush();
+            }
+            return "ok";
+        }
         /**
          * @throws ReflectionException
          */
         public function encryptFields($entity): void
         {
-            if ($this->getReflectionClass($entity)) {
+            if ($this->getEncryptorClass($entity)) {
                 $this->processFields($entity, function ($value, $type){
                     return ($this->createServiceClassInstance())->encrypt($value, $type);
                 });
@@ -50,7 +61,7 @@
          */
         public function decryptFields($entity): void
         {
-            if ($this->getReflectionClass($entity)) {
+            if ($this->getEncryptorClass($entity)) {
                 $this->processFields($entity, function ($value, $type) {
                     return ($this->createServiceClassInstance())->decrypt($value, $type);
                 });
@@ -75,7 +86,7 @@
                     $processedValue                         = $processor($value, $type);
                     
                     // cache the value entity for later in process eventDoctine to retrieve
-                    $this->cachedEntity[$entity::class]     = $value;
+//                    $this->cachedEntity[$entity::class]     = $value;
                     
                     // set the value - Encrypted/decrypted
                     $property->setValue($entity, $processedValue);
@@ -91,15 +102,19 @@
          * @return ReflectionClass |null
          * @throws ReflectionException
          */
-        private function getReflectionClass($entity): ?ReflectionClass
+        private function getEncryptorClass($entity): ?ReflectionClass
         {
-            $this->reflectionClass      = new ReflectionClass($entity);
+            $this->reflectionClass      = $this->getReflectionClass($entity);
             $file                       = $this->reflectionClass->getFileName();
             $pattern                    = "/use NeoxDoctrineSecure\\\\NeoxDoctrineSecureBundle\\\\Attribute\\\\neoxEncryptor;/";
             
             return (!is_file($file) || !preg_match($pattern, file_get_contents($file))) ? null : $this->reflectionClass;
         }
         
+        public function getReflectionClass($entity): ReflectionClass
+        {
+            return new ReflectionClass($entity);
+        }
         private function prepareClassName(): string
         {
             $this->getDsn($this->parameterBag->get("neox_doctrine_secure.neox_dsn"));
