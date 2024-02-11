@@ -116,11 +116,15 @@
             $this->reflectionClass      = new ReflectionClass($entity);
             return $this->reflectionClass;
         }
-        private function prepareClassName(): string
+        
+        private function setEncryptorClass(): string
         {
             $this->getDsn($this->parameterBag->get("neox_doctrine_secure.neox_dsn"));
-            $service    = $this->dsn->getScheme() ?? "Defuse";
-            $namespace  = "NeoxDoctrineSecure\\NeoxDoctrineSecureBundle\\Pattern\\Services\\";
+            $service            = $this->dsn->getScheme() ?? "Defuse";
+            // build path to services encrypt for windows or linux
+            $parts              = ["NeoxDoctrineSecure", "NeoxDoctrineSecureBundle", "Pattern", "Services"];
+            $namespace          = implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
+            
             return $namespace . ucfirst($service) . "Service";
         }
         
@@ -129,7 +133,7 @@
          */
         private function createServiceClassInstance()
         {
-            $className = $this->prepareClassName();
+            $className = $this->setEncryptorClass();
             if (class_exists($className)) {
                 return (new \ReflectionClass($className))->newInstance($this->dsn);
             }

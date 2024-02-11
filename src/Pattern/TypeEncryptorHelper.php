@@ -80,8 +80,8 @@
          */
         private function getEncryptionKey(string $msg = ""): array
         {
-            $key = new HiddenString($this->dsn->getPassword());
-            $message = new HiddenString($msg);
+            $key        = new HiddenString($this->dsn->getPassword());
+            $message    = new HiddenString($msg);
             $encryptionKey = KeyFactory::deriveEncryptionKey($key, self::SALT);
             
             return [$encryptionKey, $message];
