@@ -49,7 +49,7 @@
          */
         public function encryptFields($entity): void
         {
-            if ($this->getEncryptorClass($entity)) {
+            if ($this->getReflectionClass($entity)) {
                 $this->processFields($entity, function ($value, $type){
                     return ($this->createServiceClassInstance())->encrypt($value, $type);
                 });
@@ -61,7 +61,7 @@
          */
         public function decryptFields($entity): void
         {
-            if ($this->getEncryptorClass($entity)) {
+            if ($this->getReflectionClass($entity)) {
                 $this->processFields($entity, function ($value, $type) {
                     return ($this->createServiceClassInstance())->decrypt($value, $type);
                 });
@@ -94,26 +94,27 @@
             }
         }
         
-        /**
-         * This will check if the class has the neoxEncryptor attribute and process if it has Only !
-         *
-         * @param $entity
-         *
-         * @return ReflectionClass |null
-         * @throws ReflectionException
-         */
-        private function getEncryptorClass($entity): ?ReflectionClass
-        {
-            $this->reflectionClass      = $this->getReflectionClass($entity);
-            $file                       = $this->reflectionClass->getFileName();
-            $pattern                    = "/use NeoxDoctrineSecure\\\\NeoxDoctrineSecureBundle\\\\Attribute\\\\neoxEncryptor;/";
-            
-            return (!is_file($file) || !preg_match($pattern, file_get_contents($file))) ? null : $this->reflectionClass;
-        }
+//        /**
+//         * This will check if the class has the neoxEncryptor attribute and process if it has Only !
+//         *
+//         * @param $entity
+//         *
+//         * @return ReflectionClass |null
+//         * @throws ReflectionException
+//         */
+//        private function getEncryptorClass($entity): ?ReflectionClass
+//        {
+//            $this->reflectionClass      = $this->getReflectionClass($entity);
+//            $file                       = $this->reflectionClass->getFileName();
+////            $pattern                  = "/use NeoxDoctrineSecure\\\\NeoxDoctrineSecureBundle\\\\Attribute\\\\neoxEncryptor;/";
+////            || !preg_match($pattern, file_get_contents($file))
+//            return (!is_file($file) ) ? null : $this->reflectionClass;
+//        }
         
         public function getReflectionClass($entity): ReflectionClass
         {
-            return new ReflectionClass($entity);
+            $this->reflectionClass      = new ReflectionClass($entity);
+            return $this->reflectionClass;
         }
         private function prepareClassName(): string
         {
