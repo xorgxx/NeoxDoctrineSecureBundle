@@ -17,7 +17,7 @@ Install the bundle for Composer !! as is still on beta version !!
   or 
   composer require xorgxx/neox-doctrine-secure-bundle:0.*
 ````
-🚨 You will heva to add in your projet 🚨
+🚨 You will heva to add in your project. 🚨
 ````
   composer require paragonie/halite
 ````
