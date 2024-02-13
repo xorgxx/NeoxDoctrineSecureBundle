@@ -21,7 +21,7 @@
         
         public function buildEncryptor(): mixed
         {
-            switch ($this->dsn->getScheme()){
+            switch ($schema = $this->dsn->getScheme()){
                 // Building SIMPLE encryptor and manage build-in in same Entity and only type string-255 or text
                 case "standalone":
                     return $this->neoxDoctrineStandalone->setEncryptorClass($this->setEncryptorClassInstance());
@@ -34,7 +34,7 @@
                     
                 default:
                     // this is boooooooowwww
-                    return new NeoxEncryptionService();
+                    throw new \RuntimeException(sprintf("Schema '%s' not found! standalone or external in .env file| NEOX_ENCRY_DSN", $schema));
             }
         }
         
@@ -42,6 +42,7 @@
         {
 //            $this->getDsn($this->parameterBag->get("neox_doctrine_secure.neox_dsn"));
             $service            = $this->parameterBag->get("neox_doctrine_secure.neox_encryptor") ?? "Halite";
+     
             // build path to services encrypt for windows or linux
             // NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\Services
             $parts              = ["NeoxDoctrineSecure", "NeoxDoctrineSecureBundle", "Pattern", "Services"];
@@ -61,10 +62,16 @@
             if (class_exists($className)) {
                 return (new \ReflectionClass($className))->newInstance($this->parameterBag);
             }
+            
+            throw new \RuntimeException(sprintf("Class '%s' not found", $className));
         }
         
         private function getDsn(string $dsn): void
         {
+            if (empty($dsn)) {
+                throw new \RuntimeException("Dsn not found. ded you forgot to set .env file| NEOX_ENCRY_DSN ?");
+            }
+            
             $this->dsn = new Dsn($dsn);
             // Build the query string
             $query          = http_build_query($this->dsn->getOptions(), '', '&', PHP_QUERY_RFC3986);
