@@ -3,7 +3,13 @@ This bundle provides Encrypt/Decrypt data sensible in a Db system in your applic
 Its main goal is to make it simple for you to manage encrypt & decrypt sensible data into Db!
 This bundle is to refresh the old bundle [DoctrineEncryptBundle](https://github.com/absolute-quantum/DoctrineEncryptBundle)
 
+The aim of this bundle is to establish, in an automatic and transparent manner, a robust encryption and decryption
+system by externalizing data, in strict compliance with European recommendations and the directives of the General Data
+Protection Regulation (GDPR).
+
+[![2024-02-13-10-33-55.png](https://i.postimg.cc/gktbbjf7/2024-02-13-10-33-55.png)](https://postimg.cc/6yZmdW6V)
 ## Installation BETA VERSION !!
+
 Install the bundle for Composer !! as is still on beta version !!
 
 ````
