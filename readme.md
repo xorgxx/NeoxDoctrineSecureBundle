@@ -7,7 +7,7 @@ The aim of this bundle is to establish, in an automatic and transparent manner, 
 system by externalizing data, in strict compliance with European recommendations and the directives of the General Data
 Protection Regulation (GDPR).
 
-[![2024-02-13-10-33-55.png](https://i.postimg.cc/gktbbjf7/2024-02-13-10-33-55.png)](https://postimg.cc/6yZmdW6V)
+[![2024-02-13-10-33-55.png](https://i.postimg.cc/66C5K8PK/2024-02-13-10-33-55.png)](https://postimg.cc/145Zc3P7)
 ## Installation BETA VERSION !!
 
 Install the bundle for Composer !! as is still on beta version !!
