@@ -1,6 +1,6 @@
 {
   "name": "xorgxx/neox-doctrine-secure-bundle",
-  "description": "... Symfony",
+  "description": "This bundle provides Encrypt/Decrypt data sensible in a Db system in your application.\nIts main goal is to make it simple for you to manage encrypt & decrypt sensible data into Db!\nThis bundle is to refresh the old bundle [DoctrineEncryptBundle](https://github.com/absolute-quantum/DoctrineEncryptBundle)\n\nThe aim of this bundle is to establish, in an automatic and transparent manner, a robust encryption and decryption\nsystem by externalizing data, in strict compliance with European recommendations and the directives of the General Data\nProtection Regulation (GDPR).",
   "license": "proprietary",
   "minimum-stability": "stable",
   "authors": [
