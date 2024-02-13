@@ -18,8 +18,23 @@ Install the bundle for Composer !! as is still on beta version !!
 .env file
 ````
   ....
-  NEOX_ENCRY_DSN=Halite://login:[password]@standalone
+  # standalone = "buit-in" only type string 255, text 
+  # external   = this mode will externalize data in one entity (TODO : redis )
+  NEOX_ENCRY_DSN=standalone://redis
   ....
+````
+neox_doctrine_secure.yaml file
+````
+  neox_doctrine_secure:
+      neox_dsn: "%env(NEOX_ENCRY_DSN)%"
+      neox_encryptor: haliteII  # halite or haliteII not yet implement
+      neox_pws: [!!password!!]  # 16 bit
+  
+````
+🚨 You will have to make migration to add NeoxEncryptor entity 🚨
+````
+  symfony make:migration
+  symfony doctrine:migrations:migrate
 ````
 **We have only implemented Halite service to Crypt / unCrypt**
 
@@ -61,10 +76,10 @@ If you want to contribute \(thank you!\) to this bundle, here are some guideline
     * You add a new feature
     * You see code that works but isn't covered by any tests \(there is a special place in heaven for you\)
 ## Todo
-* Add a Remote system for storage Hash => Key
-* to be able to encrypt/decrypt, according to a propriety type | int, string, phone ....
+~~* Add a Remote system for storage Hash => Key~~
+~~* to be able to encrypt/decrypt, according to a propriety type | int, string, phone ....~~
 * Custom provider class Encrypt/decrypt.
 * Dispatcher to custom code.
-* Commands to manage more easily status, encrypt, decrypt ....
+* Command wasaaaa : to manage more easily status, encrypt, decrypt ....
 
 ## Thanks

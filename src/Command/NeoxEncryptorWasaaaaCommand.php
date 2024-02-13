@@ -43,6 +43,13 @@ class NeoxEncryptorWasaaaaCommand extends Command
         $io                         = new SymfonyStyle($input, $output);
         $entity[]                   = "ALL";
         
+        // check schema supported
+        if (!$this->helperCommand->checkSchemaSupported("standalone")) {
+            $io->error('Schema not supported');
+            $io->info('External schema is not supported yet! Please, use standalone schema instead (.env | NEOX_ENCRY_DSN=standalone://redis)!');
+            return Command::FAILURE;
+        };
+        
         // finding all entities with properties to encrypt or decrypt
         $entitiesWithProperties     = $this->helperCommand->getList()->entitiesWithProperties;
         
@@ -78,16 +85,17 @@ class NeoxEncryptorWasaaaaCommand extends Command
             $processing             = $this->getHelper('question')->ask($input, $output, $question);
             
             // loop through one/all entities to encrypt/decrypt
-            if ($processing === "ALL") {
-                foreach ($entitiesWithProperties as $entity) {
-                    $this->helperCommand->neoxDoctrineSecure->setEntityConvert($entity['entity'], $action);
-                    
+            foreach ($entitiesWithProperties as $entity) {
+                if ($processing === "ALL") {
+                    $this->helperCommand->neoxDoctrineFactory->buildEncryptor()->setEntityConvert($entity['entity'], $action);
                     $io->success("Processing [$action] Entity : {$entity['entity']}");
+                    
+                } else {
+                    $this->helperCommand->neoxDoctrineFactory->buildEncryptor()->setEntityConvert($entity['entity'], $action);
+                    $io->success("Processing [$action] Entity : {$entity['entity']}");
+                    break;
                 }
-            }else{
-                $io->success("Processing [$action] Entity : {$entity['entity']}");
             }
-            
             
             $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
         }else{

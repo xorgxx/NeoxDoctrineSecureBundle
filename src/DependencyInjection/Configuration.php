@@ -28,8 +28,10 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('neox_encryptor')->defaultValue("Defuse")->end()
+                ->scalarNode('neox_encryptor')->defaultValue("external")->end()
+                ->scalarNode('neox_pws')->defaultValue("!passwordToChange!")->end()
                 ->scalarNode('neox_dsn')->defaultValue("standalone://default")->end()
+            
             ->end()
         ;
 

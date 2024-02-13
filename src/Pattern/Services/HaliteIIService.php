@@ -14,9 +14,9 @@
     use ParagonIE\Halite\Alerts\InvalidType;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     
-    class HaliteService extends TypeEncryptorHelper implements NeoxDoctrineSecureInterface
+    class HaliteIIService extends TypeEncryptorHelper implements NeoxDoctrineSecureInterface
     {
-        
+
         public function __construct(readonly ParameterBagInterface $parameterBag){
             Parent::__construct($parameterBag);
         }
@@ -50,5 +50,5 @@
         {
             return Parent::decryptHaliteString($value);
         }
-        
+
     }

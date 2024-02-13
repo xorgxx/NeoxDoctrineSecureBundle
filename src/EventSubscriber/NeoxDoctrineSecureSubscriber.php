@@ -7,6 +7,7 @@
     use Doctrine\ORM\Event\PostLoadEventArgs;
     use Doctrine\ORM\Event\OnFlushEventArgs;
     use Doctrine\ORM\Events;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineFactory;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure;
     use ReflectionException;
     
@@ -19,7 +20,7 @@
     #[AsDoctrineListener(event: Events::postFlush, priority: 500, connection: 'default')]
     class NeoxDoctrineSecureSubscriber
     {
-        public function __construct(readonly NeoxDoctrineSecure $neoxCryptorService) {}
+        public function __construct(readonly NeoxDoctrineFactory $neoxCryptorService) {}
         
         /**
          * Listen a postLoad lifecycle event.
@@ -31,8 +32,9 @@
          */
         public function postLoad(PostLoadEventArgs $args): void
         {
-            $entity = $args->getObject();
-            $this->neoxCryptorService->decryptFields($entity);
+            $entity     = $args->getObject();
+            $Encryptor  = $this->neoxCryptorService->buildEncryptor();
+            $Encryptor->decryptFields($entity);
         }
         
         /**
@@ -47,7 +49,7 @@
         {
             foreach ($postFlushEventArgs->getObjectManager()->getUnitOfWork()->getIdentityMap() as $entityMap) {
                 foreach ($entityMap as $entity) {
-                    $this->neoxCryptorService->decryptFields($entity);
+                    $this->neoxCryptorService->buildEncryptor()->decryptFields($entity);
                 }
             }
         }
@@ -91,9 +93,11 @@
          */
         private function newItem(mixed $entity, OnFlushEventArgs $onFlushEventArgs, $unitOfWork): void
         {
-            $encryptCounterBefore = $this->neoxCryptorService->counterSecure;
-            $this->neoxCryptorService->encryptFields($entity);
-            if ($this->neoxCryptorService->counterSecure > $encryptCounterBefore) {
+            $Encryptor              = $this->neoxCryptorService->buildEncryptor();
+            $encryptCounterBefore   = $Encryptor->counterSecure;
+            $Encryptor->encryptFields($entity);
+            
+            if ( $Encryptor->counterSecure > $encryptCounterBefore) {
                 $classMetadata = $onFlushEventArgs->getObjectManager()->getClassMetadata(get_class($entity));
                 $unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity);
             }
@@ -108,13 +112,14 @@
         
         private function updateItem($unitOfWork): void
         {
+            $Encryptor  = $this->neoxCryptorService->buildEncryptor();
             foreach ($unitOfWork->getIdentityMap() as $entityName => $entityArray) {
-                if (isset($this->neoxCryptorService->cachedEntity[$entityName])) {
+                if (isset($Encryptor->cachedEntity[$entityName])) {
                     foreach ($entityArray as $entityId => $instance) {
-                        $this->neoxCryptorService->encryptFields($instance);
+                        $Encryptor->encryptFields($instance);
                     }
                 }
             }
-            $this->neoxCryptorService->cachedEntity = [];
+            $Encryptor->cachedEntity = [];
         }
     }

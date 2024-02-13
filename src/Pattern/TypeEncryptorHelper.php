@@ -15,6 +15,7 @@
     use ParagonIE\Halite\KeyFactory;
     use ParagonIE\HiddenString\HiddenString;
     use ParagonIE\Halite\Util;
+    use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     
     class TypeEncryptorHelper
     {
@@ -22,7 +23,7 @@
         // \x2a\x2a\x40\x23\x24\x23\x2a\x23\x26\x25\x26\x40\x25\x26\x5e\x40 = **@#$#*#&%&@$&^@
         private const SALT = "**@#$#*#&%&@$&^@";
         
-        public function __construct(private Dsn $dsn)
+        public function __construct(private ParameterBagInterface $parameterBag)
         {
         }
         
@@ -44,6 +45,7 @@
                 [$encryptionKey, $message] = $this->getEncryptionKey($value);
                 return Crypto::encrypt($message, $encryptionKey);
             }
+            return $value;
         }
         
         /**
@@ -80,7 +82,8 @@
          */
         private function getEncryptionKey(string $msg = ""): array
         {
-            $key        = new HiddenString($this->dsn->getPassword());
+            
+            $key        = new HiddenString($this->parameterBag->get("neox_doctrine_secure.neox_pws"));
             $message    = new HiddenString($msg);
             $encryptionKey = KeyFactory::deriveEncryptionKey($key, self::SALT);
             

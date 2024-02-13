@@ -4,17 +4,22 @@
     
     use Doctrine\Persistence\ManagerRegistry;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Attribute\neoxEncryptor;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineFactory;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure;
     
     class helperCommand
     {
         public array $entitiesWithProperties = [];
         
-        public function __construct(readonly ManagerRegistry $doctrine, readonly NeoxDoctrineSecure $neoxDoctrineSecure)
+        public function __construct(readonly ManagerRegistry $doctrine, readonly NeoxDoctrineFactory $neoxDoctrineFactory)
         {
         
         }
         
+        public function checkSchemaSupported(string $schema) : bool
+        {
+            return $this->neoxDoctrineFactory->getDsnSchema() === $schema;
+        }
         public function getList(): helperCommand
         {
             $metadata = $this->doctrine->getManager()->getMetadataFactory()->getAllMetadata();
