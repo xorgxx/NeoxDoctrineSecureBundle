@@ -54,7 +54,7 @@
         {
             $className = $this->getEncryptorClass();
             if (!class_exists($className)) {
-                throw new \RuntimeException(sprintf("Class '%s' not found", $className));
+                throw new \RuntimeException(sprintf("What the fuck 🚨 Encryptor class '%s' not found 🫤", $className));
             }
             return (new $className($this->parameterBag));
         }
