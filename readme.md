@@ -77,6 +77,8 @@ Consider the size / length of field you want to crypt !! ex: length:10
   "john doe" <- decrypt / encrypt -> "MUIFAOpLp21iX1Dy2ZNkYbby6zo7ADYgVs-hGkNaWR2OF5AbQUMcBKZHigtFVxZiIFWyOTV8Ts-9q_pNAHBxCKcAPZNJjfPgVQglMLAKi0bZicmPlCQKJpRpX2k5IAjAqawOlFsPpD9KikIEFRhuy"
   
 ````
+# **FEATURE** in the box in a future version
+**CUSTOMIZE** Algorithm record [ key => data ] : Add more complexity crypt/decrypt data. In this configuration only you will know want data is link to what dataEncrypt
 
 ## Contributing
 If you want to contribute \(thank you!\) to this bundle, here are some guidelines:
