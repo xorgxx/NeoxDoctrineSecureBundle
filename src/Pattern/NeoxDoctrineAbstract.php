@@ -16,12 +16,10 @@
     {
         protected ReflectionClass $reflectionClass;
         protected mixed $EncryptorClass;
-        
         public int      $counterSecure   = 0;
         public mixed    $cachedEntity;
         protected       Dsn $dsn;
         protected string $indice;
-        private const SALT = "**@#$#*#&%&@$&^@";
         protected Data|null $DataEncrypt;
         protected mised $clone;
         
@@ -32,24 +30,21 @@
         
         public function getReflectionClass($entity): ?ReflectionClass
         {
-            if ($entity instanceof Data) {
-                return null;
-            }
-            
-            $this->reflectionClass  = new ReflectionClass($entity);
-            if($this->checkClassHaveEncryptor()) {
-                $this->getEncryptionKey($this->reflectionClass->getName() . "::" . $entity->getId(), $this->reflectionClass->getShortName());
-                $this->dataCrypt();
-                return $this->reflectionClass;
+            if (!($entity instanceof Data)) {
+                $this->reflectionClass  = new ReflectionClass($entity);
+                if($this->checkClassHaveEncryptor()) {
+                    $this->getEncryptionKey($this->reflectionClass->getName() . "::" . $entity->getId(), $this->reflectionClass->getShortName());
+                    $this->dataCrypt();
+                    return $this->reflectionClass;
+                }
             }
             return null;
         }
         
         protected function checkClassHaveEncryptor()
         {
-            $classSource = file_get_contents($this->reflectionClass->getFileName());
             // Finding the presence of the class or namespace to check in the source code
-            return strpos($classSource, neoxEncryptor::class) !== false ? true : false;
+            return strpos(file_get_contents($this->reflectionClass->getFileName()), neoxEncryptor::class) !== false;
         }
         
         public function dataCrypt()
@@ -62,7 +57,7 @@
         private function getEncryptionKey(string $msg = "", string $key = ""): void
         {
             $key            = new HiddenString($key);
-            $encryptionKey  = KeyFactory::deriveEncryptionKey($key, self::SALT);
+            $encryptionKey  = KeyFactory::deriveEncryptionKey($key, $this->getSalt());
             $this->indice   = Util::keyed_hash($msg, $encryptionKey,16);
         }
         
@@ -70,5 +65,9 @@
         {
             $this->EncryptorClass = $EncryptorClass;
             return $this;
+        }
+        
+        protected function getSalt(){
+            return $this->parameterBag->get('neox_doctrine_secure.neox_salt');
         }
     }

@@ -85,9 +85,11 @@
             
             $key        = new HiddenString($this->parameterBag->get("neox_doctrine_secure.neox_pws"));
             $message    = new HiddenString($msg);
-            $encryptionKey = KeyFactory::deriveEncryptionKey($key, self::SALT);
+            $encryptionKey = KeyFactory::deriveEncryptionKey($key, $this->getSalt());
             
             return [$encryptionKey, $message];
         }
-        
+        private function getSalt(){
+            return $this->parameterBag->get('neox_doctrine_secure.neox_salt');
+        }
     }

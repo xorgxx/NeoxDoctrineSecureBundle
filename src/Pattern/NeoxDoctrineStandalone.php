@@ -33,20 +33,16 @@
         
         public function encryptFields($entity): self
         {
-            if ($this->getReflectionClass($entity)) {
-                $this->processFields($entity, function ($value, $type) {
-                    return $this->EncryptorClass->encrypt($value, $type);
-                }, $mode = true);
+            if ($reflection = $this->getReflectionClass($entity)) {
+                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->encrypt($value, $type), true);
             }
             return $this;
         }
         
-        public function decryptFields($entity, $mode = true): self
+        public function decryptFields($entity, $mode = false): self
         {
-            if ($this->getReflectionClass($entity)) {
-                $this->processFields($entity, function ($value, $type) {
-                    return $this->EncryptorClass->decrypt($value, $type);
-                }, $mode);
+            if ($reflection = $this->getReflectionClass($entity)) {
+                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->decrypt($value, $type), $mode);
             }
             return $this;
         }

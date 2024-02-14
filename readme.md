@@ -32,9 +32,14 @@ Install the bundle for Composer !! as is still on beta version !!
 neox_doctrine_secure.yaml file
 ````
   neox_doctrine_secure:
-      neox_dsn: "%env(NEOX_ENCRY_DSN)%"
-      neox_encryptor: haliteII  # halite or haliteII not yet implement
-      neox_pws: [!!password!!]  # 16 bit
+      # (default)false or true | it will turn off the bundle. by aware that it will render nothing !! field on front will by empty!!
+      # this is only for testing purpose in Development mode !!!
+      neox_off: false
+      ####
+    neox_dsn: "%env(NEOX_ENCRY_DSN)%"
+    neox_pws: "%env(NEOX_ENCRY_PWS)%"
+    neox_salt: "%env(NEOX_ENCRY_SALT)%"
+    neox_encryptor: haliteII # halite or haliteII
   
 ````
 🚨 You will have to make migration to add NeoxEncryptor entity 🚨

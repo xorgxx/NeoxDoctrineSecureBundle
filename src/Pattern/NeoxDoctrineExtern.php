@@ -16,37 +16,37 @@
         
         public function setEntityConvert($entity, $action): string
         {
-            if ($Entity = $this->entityManager->getRepository($entity)->findall()) {
-                $this->cachedEntity = [];
-                foreach ($Entity as $item) {
-                    if ($action === "Decrypt") {
-                        $this->decryptFields($item, false);
-                    } else {
-                        $this->encryptFields($item);
-                    }
-                    $this->entityManager->persist($item);
-                }
-                $this->entityManager->flush();
+            $entities = $this->entityManager->getRepository($entity)->findAll();
+            if (empty($entities)) {
+                return "ok";
             }
+            
+            $this->cachedEntity = [];
+            foreach ($entities as $item) {
+                if ($action === "Decrypt") {
+                    $this->decryptFields($item, false);
+                } else {
+                    $this->encryptFields($item);
+                }
+                $this->entityManager->persist($item);
+            }
+            $this->entityManager->flush();
+            
             return "ok";
         }
         
         public function encryptFields($entity): self
         {
-            if ($this->getReflectionClass($entity)) {
-                $this->processFields($entity, function ($value, $type) {
-                    return $this->EncryptorClass->encrypt($value, $type);
-                }, true);
+            if ($reflection = $this->getReflectionClass($entity)) {
+                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->encrypt($value, $type), true);
             }
             return $this;
         }
         
         public function decryptFields($entity, $mode = false): self
         {
-            if ($this->getReflectionClass($entity)) {
-                $this->processFields($entity, function ($value, $type) {
-                    return $this->EncryptorClass->decrypt($value, $type);
-                }, $mode);
+            if ($reflection = $this->getReflectionClass($entity)) {
+                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->decrypt($value, $type), $mode);
             }
             return $this;
         }
@@ -93,17 +93,18 @@
 //            }
 //
             if ($mode) {
+                $itemsContent = json_encode($items);
                 if ($this->DataEncrypt) {
-                    $this->DataEncrypt->setContent(json_encode($items));
+                    $this->DataEncrypt->setContent($itemsContent);
                 } else {
                     $this->DataEncrypt = (new Data())
-                        ->setContent(json_encode($items))
+                        ->setContent($itemsContent)
                         ->getId($this->indice);
                 }
-                    $this->cachedEntity = [];
-                    $this->entityManager->persist($this->DataEncrypt);
-                    $this->entityManager->flush();
-               
+                
+                $this->cachedEntity = [];
+                $this->entityManager->persist($this->DataEncrypt);
+                $this->entityManager->flush();
             }
         }
         

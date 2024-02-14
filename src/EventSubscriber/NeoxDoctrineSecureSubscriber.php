@@ -10,6 +10,7 @@
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineFactory;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure;
     use ReflectionException;
+    use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     
     /**
      * Doctrine event subscriber which encrypt/decrypt entities
@@ -20,7 +21,7 @@
     #[AsDoctrineListener(event: Events::postFlush, priority: 500, connection: 'default')]
     class NeoxDoctrineSecureSubscriber
     {
-        public function __construct(readonly NeoxDoctrineFactory $neoxCryptorService) {}
+        public function __construct(readonly NeoxDoctrineFactory $neoxCryptorService, readonly ParameterBagInterface $parameterBag) {}
         
         /**
          * Listen a postLoad lifecycle event.
@@ -33,8 +34,8 @@
         public function postLoad(PostLoadEventArgs $args): void
         {
             $entity     = $args->getObject();
-            $Encryptor  = $this->neoxCryptorService->buildEncryptor();
-            $Encryptor->decryptFields($entity);
+            $this->getEncryptorFactory()?->buildEncryptor()->decryptFields($entity);
+
         }
         
         /**
@@ -49,7 +50,7 @@
         {
             foreach ($postFlushEventArgs->getObjectManager()->getUnitOfWork()->getIdentityMap() as $entityMap) {
                 foreach ($entityMap as $entity) {
-                    $this->neoxCryptorService->buildEncryptor()->decryptFields($entity);
+                    $this->getEncryptorFactory()?->buildEncryptor()->decryptFields($entity);
                 }
             }
         }
@@ -93,7 +94,8 @@
          */
         private function newItem(mixed $entity, OnFlushEventArgs $onFlushEventArgs, $unitOfWork): void
         {
-            $Encryptor              = $this->neoxCryptorService->buildEncryptor();
+            
+            $Encryptor              = $this->getEncryptorFactory()?->buildEncryptor();
             $encryptCounterBefore   = $Encryptor->counterSecure;
             $Encryptor->encryptFields($entity);
             
@@ -112,7 +114,7 @@
         
         private function updateItem($unitOfWork): void
         {
-            $Encryptor  = $this->neoxCryptorService->buildEncryptor();
+            $Encryptor       = $this->getEncryptorFactory()?->buildEncryptor();
             foreach ($unitOfWork->getIdentityMap() as $entityName => $entityArray) {
                 if (isset($Encryptor->cachedEntity[$entityName])) {
                     foreach ($entityArray as $entityId => $instance) {
@@ -121,5 +123,14 @@
                 }
             }
             $Encryptor->cachedEntity = [];
+        }
+        
+        private function getEncryptorFactory(): ?NeoxDoctrineFactory
+        {
+            $off = $this->parameterBag->get("neox_doctrine_secure.neox_off");
+            if ($off) {
+                return null;
+            }
+            return $this->neoxCryptorService;
         }
     }
