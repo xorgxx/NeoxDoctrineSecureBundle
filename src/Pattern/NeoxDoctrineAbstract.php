@@ -42,16 +42,16 @@
             if (!($entity instanceof Data)) {
                 $this->reflectionClass  = new ReflectionClass($entity);
                 if($this->checkClassHaveEncryptor()) {
-                    
-                    $listener   = new NeoxEncryptorEvent($this->reflectionClass, $entity);
-                    $this->EventDispatcherInterface->dispatch($listener, NeoxEncryptorEvent::EVENT_ENCRYPTOR_KEY);
-                    
-                    $msg        = $listener->getMsg() ?? $this->reflectionClass->getName() . "::" . $entity->getId();
-                    $key        = $listener->getKey() ?? $this->reflectionClass->getShortName();
-                    
-                    $this->getEncryptionKey($msg, $key);
-                    
-                    $this->dataCrypt();
+
+//                    $listener   = new NeoxEncryptorEvent($this->reflectionClass, $entity);
+//                    $this->EventDispatcherInterface->dispatch($listener, NeoxEncryptorEvent::EVENT_ENCRYPTOR_KEY);
+//
+//                    $msg        = $listener->getMsg() ?? $this->reflectionClass->getName() . "::" . $entity->getId();
+//                    $key        = $listener->getKey() ?? $this->reflectionClass->getShortName();
+//
+//                    $this->getEncryptionKey($msg, $key);
+//
+//                    $this->dataCrypt();
                     return $this->reflectionClass;
                 }
             }
@@ -92,29 +92,29 @@
         {
             $msg = [
                 // Used to represent strings. It can be configured with a maximum length.
-                "String"   => "<enc>",
+                "string"   => "<enc>",
                 // Used to represent integers.
-                "Integer"  => 7,
+                "integer"  => 7,
                 // Used to represent integers smaller than Integer.
-                "SmallInt" => 77,
+                "smallInt" => 77,
                 // Used to represent integers larger than Integer.
-                "BigInt"   => 777,
+                "bigInt"   => 777,
                 // Used to represent Boolean values (TRUE or FALSE).
-                "Boolean"  => true,
+                "boolean"  => true,
                 // Used to represent a date and time.
-                "DateTime" => "2000-02-02 02:02:02",
+                "dateTime" => "2000-02-02 02:02:02",
                 // Used to represent a date only.
-                "Date"     => "2000-02-02",
+                "date"     => "2000-02-02",
                 // Used to represent one hour only.
-                "Time"     => "02:02:02",
+                "time"     => "02:02:02",
                 // Used to represent decimal floating point numbers.
-                "Float"    => 777.0,
+                "float"    => 777.0,
                 // Used to represent decimal numbers.
                 "Decimal"  => 777.7,
                 // Used to represent an array.
-                "Array"    => ["007"=>"007"],
+                "array"    => ["007"=>"007"],
                 // Used to represent an object.
-                "Object"   =>  [
+                "object"   =>  [
                     "Decimal" => 777.7,
                     "Array"   => ["007" => "007"],
                 ],

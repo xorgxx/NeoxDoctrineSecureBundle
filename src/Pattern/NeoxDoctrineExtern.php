@@ -75,7 +75,9 @@
                     $propertyName       = $property->getName();
                     // get the value item
                     $value              = $property->getValue($entity);
-                    $neoxEncryptValue   = json_decode($this->DataEncrypt->getContent())->$propertyName;
+                    if ($i = $this->DataEncrypt?->getContent()) {
+                        $neoxEncryptValue   = json_decode($i)->$propertyName;
+                    }
                     
                     if ($mode) {
                         $processedValue                 = $processor($value, $type);

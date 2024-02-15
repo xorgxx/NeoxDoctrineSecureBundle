@@ -39,7 +39,7 @@
             return $this;
         }
         
-        public function decryptFields($entity, $mode = false): self
+        public function decryptFields($entity, $mode = true): self
         {
             if ($reflection = $this->getReflectionClass($entity)) {
                 $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->decrypt($value, $type), $mode);
