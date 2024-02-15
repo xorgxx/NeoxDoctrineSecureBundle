@@ -10,8 +10,7 @@ Le lien entre l'entité source et l'entité NeoxEncryptor est établi par un alg
 ## TRES IMPORTANT A COMPRENDRE 🚨
 Il est crucial de noter qu'il sera relativement simple de passer du mode standalone (décryptage) au mode external, mais que l'inverse n'est pas actuellement possible. Cette limitation découle principalement de la complexité associée au processus de décryptage.
 
-[![Untitled-Diagram-drawio-2.png](https://i.postimg.cc/159ZBdqT/Untitled-Diagram-drawio-2.png)](https://postimg.cc/c65j4XTM)
-
+[![Untitled-Diagram-drawio-3.png](https://i.postimg.cc/7Ljcj2vR/Untitled-Diagram-drawio-3.png)](https://postimg.cc/B8cMKtn5)
 **CUSTOMIZE** Algorithm record [ key => data ] :
 We want to enhance security by complicating the algorithm that automatically associates the source entity with the
 encrypted entity in my Symfony application. Currently, this logic is exposed in the source code, which could pose a
