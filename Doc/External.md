@@ -6,3 +6,5 @@ encrypted entity in my Symfony application. Currently, this logic is exposed in 
 security risk if the code is accessible to third parties. To make this association less obvious to a hacker, I would
 like to make the algorithm more complex while also providing an easy customization option for users. Thus, even if the
 source code is accessible, it would be challenging to easily determine which elements belong to which entities.
+
+[![Untitled-Diagram-drawio-1.png](https://i.postimg.cc/5931dp4z/Untitled-Diagram-drawio-1.png)](https://postimg.cc/MXvg17jZ)
