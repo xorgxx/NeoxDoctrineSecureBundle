@@ -1,14 +1,14 @@
 # External | Advance read before you do anything 🚨🚨🚨
 
 ## Process
-Dans ce mode, toutes les données qui possèdent exclusivement l'attribut #[neoxEncryptor] dans l'entité source seront
-déplacées vers une autre entité pour etre cryptées. Ce processus garantit que les données ne seront plus visibles dans l'entité source.
+In this mode, all data that exclusively has the #[neoxEncryptor] attribute in the source entity will be
+moved to another entity to be encrypted. This process ensures that the data will no longer be visible in the source entity.
 
-## Le lien
-Le lien entre l'entité source et l'entité NeoxEncryptor est établi par un algorithme standard, mais vous avez également la possibilité de le définir vous-même, en fonction de vos besoins et de vos préférences.
+## Link
+The link between the source entity and the NeoxEncryptor entity is established by a standard algorithm, but you also have the possibility to define it yourself, according to your needs and preferences.
 
-## TRES IMPORTANT A COMPRENDRE 🚨
-Il est crucial de noter qu'il sera relativement simple de passer du mode standalone (décryptage) au mode external, mais que l'inverse n'est pas actuellement possible. Cette limitation découle principalement de la complexité associée au processus de décryptage.
+## VERY IMPORTANT TO UNDERSTAND 🚨
+It is crucial to note that it will be relatively simple to switch from standalone mode (decryption) to external mode, but that the reverse is not currently possible. This limitation mainly arises from the complexity associated with the decryption process.
 
 [![Untitled-Diagram-drawio-3.png](https://i.postimg.cc/7Ljcj2vR/Untitled-Diagram-drawio-3.png)](https://postimg.cc/B8cMKtn5)
 
@@ -19,8 +19,8 @@ security risk if the code is accessible to third parties. To make this associati
 like to make the algorithm more complex while also providing an easy customization option for users. Thus, even if the
 source code is accessible, it would be challenging to easily determine which elements belong to which entities.
 
-# How to customize lien ?
-Vous devez créer un subscriber d'événements ex:
+# How to customize Link id ?
+You need to create an event subscriber ex:
 
 ````
 <?php
@@ -30,7 +30,7 @@ Vous devez créer un subscriber d'événements ex:
      * Member: xorgxx
      */
 
-namespace App\EventSubscriber;
+    namespace App\EventSubscriber;
 
 
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Events\NeoxEncryptorEvent;

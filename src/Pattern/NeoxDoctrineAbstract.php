@@ -11,6 +11,10 @@
     use ParagonIE\HiddenString\HiddenString;
     use ReflectionClass;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+    use Symfony\Component\EventDispatcher\EventDispatcher;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Events\NeoxEncryptorEvent;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+    
     
     ABSTRACT class NeoxDoctrineAbstract implements neoxDoctrineInterface
     {
@@ -24,7 +28,12 @@
         protected mised $clone;
         
         
-        public function __construct(readonly ParameterBagInterface $parameterBag, readonly EntityManagerInterface $entityManager)
+        public function __construct(
+            readonly ParameterBagInterface $parameterBag,
+            readonly EntityManagerInterface $entityManager,
+            readonly EventDispatcherInterface $EventDispatcherInterface
+        
+        )
         {
         }
         
@@ -33,7 +42,15 @@
             if (!($entity instanceof Data)) {
                 $this->reflectionClass  = new ReflectionClass($entity);
                 if($this->checkClassHaveEncryptor()) {
-                    $this->getEncryptionKey($this->reflectionClass->getName() . "::" . $entity->getId(), $this->reflectionClass->getShortName());
+                    
+                    $listener   = new NeoxEncryptorEvent($this->reflectionClass, $entity);
+                    $this->EventDispatcherInterface->dispatch($listener, NeoxEncryptorEvent::EVENT_ENCRYPTOR_KEY);
+                    
+                    $msg        = $listener->getMsg() ?? $this->reflectionClass->getName() . "::" . $entity->getId();
+                    $key        = $listener->getKey() ?? $this->reflectionClass->getShortName();
+                    
+                    $this->getEncryptionKey($msg, $key);
+                    
                     $this->dataCrypt();
                     return $this->reflectionClass;
                 }
@@ -69,5 +86,40 @@
         
         protected function getSalt(){
             return $this->parameterBag->get('neox_doctrine_secure.neox_salt');
+        }
+        
+        protected function callBackType(string $type)
+        {
+            $msg = [
+                // Used to represent strings. It can be configured with a maximum length.
+                "String"   => "<enc>",
+                // Used to represent integers.
+                "Integer"  => 7,
+                // Used to represent integers smaller than Integer.
+                "SmallInt" => 77,
+                // Used to represent integers larger than Integer.
+                "BigInt"   => 777,
+                // Used to represent Boolean values (TRUE or FALSE).
+                "Boolean"  => true,
+                // Used to represent a date and time.
+                "DateTime" => "2000-02-02 02:02:02",
+                // Used to represent a date only.
+                "Date"     => "2000-02-02",
+                // Used to represent one hour only.
+                "Time"     => "02:02:02",
+                // Used to represent decimal floating point numbers.
+                "Float"    => 777.0,
+                // Used to represent decimal numbers.
+                "Decimal"  => 777.7,
+                // Used to represent an array.
+                "Array"    => ["007"=>"007"],
+                // Used to represent an object.
+                "Object"   =>  [
+                    "Decimal" => 777.7,
+                    "Array"   => ["007" => "007"],
+                ],
+                
+            ];
+            return $msg[$type];
         }
     }

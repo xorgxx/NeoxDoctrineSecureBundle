@@ -5,13 +5,19 @@
     use Doctrine\ORM\EntityManagerInterface;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Attribute\neoxEncryptor;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Entity\NeoxEncryptor as Data;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Events\NeoxEncryptorEvent;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     
     final class NeoxDoctrineExtern extends NeoxDoctrineAbstract
     {
-        public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager)
+        public function __construct(
+            ParameterBagInterface $parameterBag,
+            EntityManagerInterface $entityManager,
+            EventDispatcherInterface $EventDispatcherInterface
+        )
         {
-            Parent::__construct($parameterBag, $entityManager);
+            Parent::__construct($parameterBag, $entityManager, $EventDispatcherInterface);
         }
         
         public function setEntityConvert($entity, $action): string
@@ -53,6 +59,7 @@
         
         public function processFields($entity, callable $processor, bool $mode = false): void
         {
+
             $items = [];
             foreach ($this->reflectionClass->getProperties() as $property) {
                 // filter on "neoxEncryptor" attribute
@@ -106,15 +113,5 @@
                 $this->entityManager->persist($this->DataEncrypt);
                 $this->entityManager->flush();
             }
-        }
-        
-        private function callBackType(string $type)
-        {
-            $msg = [
-                "int"       => 0007,
-                "string"    => "<enc>",
-//                "datetime"  => new DateTime()
-            ];
-            return $msg[$type];
         }
     }
