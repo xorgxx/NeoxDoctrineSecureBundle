@@ -45,12 +45,12 @@
 //        $this->helperCommand->neoxDoctrineFactory->buildEncryptor()->setEntityConvert(null, null);
 //        $io->success("Processing [$action] Entity : {$entity['entity']}");
             
-            // check schema supported
-            if (!$this->helperCommand->checkSchemaSupported("standalone")) {
-                $io->error('Schema not supported');
-                $io->info('External schema is not supported yet! Please, use standalone schema instead (.env | NEOX_ENCRY_DSN=standalone://redis)!');
-//            return Command::FAILURE;
-            };
+            // check schema supported dont need any more
+//            if (!$this->helperCommand->checkSchemaSupported("standalone")) {
+//                $io->error('Schema not supported');
+//                $io->info('External schema is not supported yet! Please, use standalone schema instead (.env | NEOX_ENCRY_DSN=standalone://redis)!');
+//                return Command::FAILURE;
+//            };
             
             // finding all entities with properties to encrypt or decrypt
             $entitiesWithProperties = $this->helperCommand->getList()->entitiesWithProperties;
