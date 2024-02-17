@@ -18,6 +18,8 @@ During the conversion from one format to another, several steps are required:
     * Modify the schema in the .env file by specifying the new format, for example, NEOX_ENCRY_DSN=external://redis where 'external' can be replaced with 'standalone'.
     * Encrypt the data in the new format.
 
+Similarly, attempting to hydrate a table in the front end with an entity containing encrypted fields will take a significant amount of time!
+
 It is crucial to note that it will be relatively simple to switch from standalone mode (decryption) to external mode, but that the reverse is not currently possible. This limitation mainly arises from the complexity associated with the decryption process.
 
 [![Untitled-Diagram-drawio-3.png](https://i.postimg.cc/7Ljcj2vR/Untitled-Diagram-drawio-3.png)](https://postimg.cc/B8cMKtn5)
