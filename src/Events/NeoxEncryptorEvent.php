@@ -42,9 +42,4 @@
         {
             $this->key = $key;
         }
-        
-        public function getEntity(): mixed
-        {
-            return $this->entity;
-        }
     }

@@ -11,7 +11,7 @@ Protection Regulation (GDPR).
 [![2024-02-13-10-33-55.png](https://i.postimg.cc/66C5K8PK/2024-02-13-10-33-55.png)](https://postimg.cc/145Zc3P7)
 ## Installation BETA VERSION !!
 
-Install the bundle for Composer !! as is still on beta version !!
+Install the bundle for Composer !! as is still on a beta version !!
 
 ````
   composer require xorgxx/neox-doctrine-secure-bundle
@@ -80,6 +80,22 @@ Consider the size / length of field you want to crypt !! ex: length:10
   "john doe" <- decrypt / encrypt -> "MUIFAOpLp21iX1Dy2ZNkYbby6zo7ADYgVs-hGkNaWR2OF5AbQUMcBKZHigtFVxZiIFWyOTV8Ts-9q_pNAHBxCKcAPZNJjfPgVQglMLAKi0bZicmPlCQKJpRpX2k5IAjAqawOlFsPpD9KikIEFRhuy"
   
 ````
+## Tools power
+Because sometimes we need to get access full range of data (4000 lines) to check whatever, but we don't want to waite for hour that it convert encrypted data you cant stop EventListener :
+````
+  use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineTools;
+  ...
+  // this will stop eventlistener to decrypt
+  $neoxTableBuilder->EventListener();
+  
+  $entity = $parametersRepository->findAll()
+  
+  // this will restart eventlistener to decrypt
+  $neoxTableBuilder->EventListener(true);
+  
+  // data on the field encrypted will be empty
+````
+
 
 [🚨🚨 **FEATURE ADVANCE** in the box in a future version](Doc/External.md)
 
