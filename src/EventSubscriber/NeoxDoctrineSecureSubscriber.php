@@ -8,20 +8,23 @@
     use Doctrine\ORM\Event\OnFlushEventArgs;
     use Doctrine\ORM\Events;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineFactory;
-    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineStandalone;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineExtern;
     use ReflectionException;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Entity\NeoxEncryptor;
     
     /**
      * Doctrine event subscriber which encrypt/decrypt entities
      */
-    
     #[AsDoctrineListener(event: Events::postLoad, priority: 10, connection: 'default')]
     #[AsDoctrineListener(event: Events::onFlush, priority: 500, connection: 'default')]
     #[AsDoctrineListener(event: Events::postFlush, priority: 500, connection: 'default')]
     class NeoxDoctrineSecureSubscriber
     {
-        public function __construct(readonly NeoxDoctrineFactory $neoxCryptorService, readonly ParameterBagInterface $parameterBag) {}
+        public function __construct(readonly NeoxDoctrineFactory $neoxCryptorService, readonly ParameterBagInterface $parameterBag)
+        {
+        }
         
         /**
          * Listen a postLoad lifecycle event.
@@ -33,14 +36,16 @@
          */
         public function postLoad(PostLoadEventArgs $args): void
         {
-            $entity     = $args->getObject();
-            $this->getEncryptorFactory()?->buildEncryptor()->decryptFields($entity);
-
+            $entity         = $args->getObject();
+            if ($Encryptor = $this->getEncryptor()) {
+                $Encryptor->decryptFields($entity, false);
+            }
+            
         }
         
         /**
          * Listen to postFlush event
-         * Decrypt entities after having been inserted into the database
+         * Decrypt entities after having been inserted (created) into the database
          *
          * @param PostFlushEventArgs $postFlushEventArgs
          *
@@ -48,10 +53,23 @@
          */
         public function postFlush(PostFlushEventArgs $postFlushEventArgs): void
         {
+            // The first one is to add new entities source
             foreach ($postFlushEventArgs->getObjectManager()->getUnitOfWork()->getIdentityMap() as $entityMap) {
-                foreach ($entityMap as $entity) {
-                    $this->getEncryptorFactory()?->buildEncryptor()->decryptFields($entity);
+                /**
+                 * On mode external to be created, dectection is $Encryptor->cachedEntity meaing that external as to be created
+                 * if yes then encrypted fields need
+                 */
+                if ($Encryptor = $this->getEncryptor()) {
+                    foreach ($entityMap as $entity) {
+                        $reflector  = new \ReflectionClass($entity);
+                        if ($Encryptor instanceof NeoxDoctrineExtern && isset($Encryptor->cachedEntity[$reflector->getName()])) {
+                            $Encryptor->encryptFields($entity);
+                        } else {
+                            $this->getEncryptorFactory()?->buildEncryptor()->decryptFields($entity);
+                        }
+                    }  
                 }
+  
             }
         }
         
@@ -69,6 +87,7 @@
             
             foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
                 $this->newItem($entity, $onFlushEventArgs, $unitOfWork);
+                
             }
             foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
                 $this->updateItem($unitOfWork);
@@ -95,14 +114,17 @@
         private function newItem(mixed $entity, OnFlushEventArgs $onFlushEventArgs, $unitOfWork): void
         {
             
-            $Encryptor              = $this->getEncryptorFactory()?->buildEncryptor();
-            $encryptCounterBefore   = $Encryptor->counterSecure;
-            $Encryptor->encryptFields($entity);
-            
-            if ( $Encryptor->counterSecure > $encryptCounterBefore) {
-                $classMetadata = $onFlushEventArgs->getObjectManager()->getClassMetadata(get_class($entity));
-                $unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity);
+            if ($Encryptor = $this->getEncryptor()) {
+                $encryptCounterBefore = $Encryptor->counterSecure;
+                $Encryptor->encryptFields($entity, false);
+                
+                if ($Encryptor->counterSecure > $encryptCounterBefore) {
+                    $classMetadata = $onFlushEventArgs->getObjectManager()->getClassMetadata(get_class($entity));
+                    $unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity);
+                }  
             }
+      
+            
         }
         
         /**
@@ -114,15 +136,17 @@
         
         private function updateItem($unitOfWork): void
         {
-            $Encryptor       = $this->getEncryptorFactory()?->buildEncryptor();
-            foreach ($unitOfWork->getIdentityMap() as $entityName => $entityArray) {
-                if (isset($Encryptor->cachedEntity[$entityName])) {
-                    foreach ($entityArray as $entityId => $instance) {
-                        $Encryptor->encryptFields($instance);
+            if ($Encryptor = $this->getEncryptor()) {
+                foreach ($unitOfWork->getIdentityMap() as $entityName => $entityArray) {
+                    if (isset($Encryptor->cachedEntity[$entityName])) {
+                        foreach ($entityArray as $entityId => $instance) {
+                            $Encryptor->encryptFields($instance);
+                        }
                     }
                 }
+                $Encryptor->cachedEntity = [];
             }
-            $Encryptor->cachedEntity = [];
+
         }
         
         private function getEncryptorFactory(): ?NeoxDoctrineFactory
@@ -132,5 +156,14 @@
                 return null;
             }
             return $this->neoxCryptorService;
+        }
+        
+        private function getEncryptor(): NeoxDoctrineExtern|NeoxDoctrineStandalone|null
+        {
+            $Encryptor  = $this->getEncryptorFactory()?->buildEncryptor();
+            if ($Encryptor && !$Encryptor->byPassListenerEvent) {
+                return $Encryptor;
+            }
+            return null;
         }
     }

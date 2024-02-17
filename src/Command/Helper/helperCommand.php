@@ -6,7 +6,8 @@
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Attribute\neoxEncryptor;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineFactory;
     use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineSecure;
-    
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\EventSubscriber\NeoxDoctrineSecureSubscriber;
+    use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineAbstract;
     class helperCommand
     {
         public array $entitiesWithProperties = [];
@@ -25,17 +26,28 @@
             $metadata = $this->doctrine->getManager()->getMetadataFactory()->getAllMetadata();
             
             foreach ($metadata as $classMetadata) {
-                $entityName = $classMetadata->getName();
-                $properties = $classMetadata->getFieldNames();
+                $entityName     = $classMetadata->getName();
+                $properties     = $classMetadata->getFieldNames();
                 $propertiesList = [];
+                
                 
                 foreach ($properties as $property) {
                     foreach ($classMetadata->getReflectionProperty($property)->getAttributes() as $attribute) {
                         if ($attribute->getName() === neoxEncryptor::class) {
-                            $fieldMapping = $classMetadata->getFieldMapping($property);
-                            $type = $fieldMapping['type'] ?? null;
-                            $length = isset($fieldMapping['length']) ? ' - ' . $fieldMapping['length'] : '';
-                            $propertiesList[] = $type ? sprintf('    - Property : %s ( %s%s ) ', $property, $type, $length) : $property;
+                            
+                            $eventManager       = $this->doctrine->getManager()->getEventManager();
+                            $eventManager->removeEventListener([\Doctrine\ORM\Events::postLoad], NeoxDoctrineSecureSubscriber::class);
+                            $eventManager->addEventListener([\Doctrine\ORM\Events::postLoad], NeoxDoctrineSecureSubscriber::class);
+                            $entity             = $this->doctrine->getManager()->getRepository($entityName)->findOneBy([]);
+                     
+      
+                            $fieldMapping       = $classMetadata->getFieldMapping($property);
+                            $type               = $fieldMapping['type'] ?? null;
+                            $length             = isset($fieldMapping['length']) ? ' - ' . $fieldMapping['length'] : '';
+                            $value              = $classMetadata->getFieldValue($entity, $property);
+                            $value              = NeoxDoctrineAbstract::callBackType("",$value) ? "External" : "standalone";
+                            $propertiesList[]   = $type ? sprintf('   %s - Property : %s ( %s%s ) ', $value, $property, $type, $length) : $property;
+                            
                             break;
                         }
                     }
@@ -43,10 +55,13 @@
                 
                 if (!empty($propertiesList)) {
                     $this->entitiesWithProperties[] = [
-                        'entity' => $entityName,
-                        'properties' => $propertiesList
+                        'entity'        => $entityName,
+                        'properties'    => $propertiesList,
+                        'encryptor'     => $value
                     ];
                 }
+                
+                
             }
             return $this;
         }

@@ -20,21 +20,24 @@
                 $this->cachedEntity = [];
                 foreach ($Entity as $item) {
                     if ($action === "Decrypt") {
+                        $this->setByPassListenerEvent(false);
                         $this->decryptFields($item, false);
                     } else {
+                        $this->setByPassListenerEvent(true);
                         $this->encryptFields($item);
                     }
                     $this->entityManager->persist($item);
                 }
+                $this->setByPassListenerEvent(true);
                 $this->entityManager->flush();
             }
             return "ok";
         }
         
-        public function encryptFields($entity): self
+        public function encryptFields($entity, $mode = true): self
         {
             if ($reflection = $this->getReflectionClass($entity)) {
-                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->encrypt($value, $type), true);
+                $this->processFields($entity, fn($value, $type) => $this->EncryptorClass->encrypt($value, $type), $mode);
             }
             return $this;
         }
@@ -46,7 +49,7 @@
             }
             return $this;
         }
-        
+
         public function processFields($entity, callable $processor, bool $mode = true): void
         {
             foreach ($this->reflectionClass->getProperties() as $property) {
@@ -58,23 +61,23 @@
                     $this->counterSecure++;
                     // get the type to later use to process the value by Type
                     $type = $property->getType()->getName();
-                    
+
                     // get the value item
                     $value = $property->getValue($entity);
-                    
+
                     // process the value Encrypt/decrypt
                     $processedValue = $processor($value, $type);
-                    
+
                     // cache the value entity for later in process eventDoctine to retrieve
-                    if ($mode) {
+//                    if ($mode) {
                         $this->cachedEntity[$entity::class] = $value;
-                    };
+//                    };
 //                    $this->cachedEntity[$entity::class]     = $value;
-                    
+
                     // set the value - Encrypted/decrypted
                     $property->setValue($entity, $processedValue);
                 }
             }
         }
-        
+
     }

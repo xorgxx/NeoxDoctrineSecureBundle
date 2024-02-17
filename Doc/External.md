@@ -8,6 +8,16 @@ moved to another entity to be encrypted. This process ensures that the data will
 The link between the source entity and the NeoxEncryptor entity is established by a standard algorithm, but you also have the possibility to define it yourself, according to your needs and preferences.
 
 ## VERY IMPORTANT TO UNDERSTAND 🚨
+It's important to note that robust data encryption incurs additional costs in terms of computational processing. On average, each encryption operation may require around 0.10 milliseconds of processing per data line. Furthermore, when converting data from one format to another, it's necessary to account for additional processing time. For instance, processing 500 lines may take approximately 3 minutes.
+
+Maintaining consistency in data format across all entities is also crucial to simplify operations. This ensures uniformity in the encryption process and reduces overall system complexity.
+
+During the conversion from one format to another, several steps are required:
+
+    * Decrypt the data in the current format.
+    * Modify the schema in the .env file by specifying the new format, for example, NEOX_ENCRY_DSN=external://redis where 'external' can be replaced with 'standalone'.
+    * Encrypt the data in the new format.
+
 It is crucial to note that it will be relatively simple to switch from standalone mode (decryption) to external mode, but that the reverse is not currently possible. This limitation mainly arises from the complexity associated with the decryption process.
 
 [![Untitled-Diagram-drawio-3.png](https://i.postimg.cc/7Ljcj2vR/Untitled-Diagram-drawio-3.png)](https://postimg.cc/B8cMKtn5)

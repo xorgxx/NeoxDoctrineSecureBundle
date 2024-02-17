@@ -25,7 +25,7 @@
         protected       Dsn $dsn;
         protected string $indice;
         protected Data|null $DataEncrypt;
-        protected mised $clone;
+        public bool $byPassListenerEvent = false;
         
         
         public function __construct(
@@ -42,16 +42,6 @@
             if (!($entity instanceof Data)) {
                 $this->reflectionClass  = new ReflectionClass($entity);
                 if($this->checkClassHaveEncryptor()) {
-
-//                    $listener   = new NeoxEncryptorEvent($this->reflectionClass, $entity);
-//                    $this->EventDispatcherInterface->dispatch($listener, NeoxEncryptorEvent::EVENT_ENCRYPTOR_KEY);
-//
-//                    $msg        = $listener->getMsg() ?? $this->reflectionClass->getName() . "::" . $entity->getId();
-//                    $key        = $listener->getKey() ?? $this->reflectionClass->getShortName();
-//
-//                    $this->getEncryptionKey($msg, $key);
-//
-//                    $this->dataCrypt();
                     return $this->reflectionClass;
                 }
             }
@@ -88,7 +78,7 @@
             return $this->parameterBag->get('neox_doctrine_secure.neox_salt');
         }
         
-        protected function callBackType(string $type)
+        public static function callBackType(string $type, mixed $mode = false)
         {
             $msg = [
                 // Used to represent strings. It can be configured with a maximum length.
@@ -120,6 +110,21 @@
                 ],
                 
             ];
+            
+            if ($mode) {
+                if (in_array($mode, $msg, true)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+    
             return $msg[$type];
+        }
+        
+        protected function setByPassListenerEvent(bool $mode): self
+        {
+            $this->byPassListenerEvent = $mode;
+            return $this;
         }
     }

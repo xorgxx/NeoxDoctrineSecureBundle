@@ -25,7 +25,10 @@
             if ($this->dsn->getScheme() === "standalone") {
                 return $this->neoxDoctrineStandalone->setEncryptorClass($encryptor);
             } elseif ($this->dsn->getScheme() === "external") {
-                return $this->neoxDoctrineStandalone->setEncryptorClass($encryptor);
+                return $this->neoxDoctrineExtern
+                        ->setDsn($this->dsn)
+                        ->setEncryptorClass($encryptor)
+                    ;
             } else {
                 throw new \RuntimeException(sprintf("Schema '%s' not found! standalone or external in .env file| NEOX_ENCRY_DSN", $this->dsn->getScheme()));
             }

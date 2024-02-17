@@ -1,5 +1,4 @@
 
-# **Only Standalone mode !!**
 # NeoxDoctrineSecureBundle { Symfony 6/7 } 
 This bundle provides Encrypt/Decrypt data sensible in a Db system in your application.
 Its main goal is to make it simple for you to manage encrypt & decrypt sensible data into Db!
