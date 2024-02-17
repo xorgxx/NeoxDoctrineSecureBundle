@@ -16,7 +16,7 @@ Install the bundle for Composer !! as is still on beta version !!
 ````
   composer require xorgxx/neox-doctrine-secure-bundle
   or 
-  composer require xorgxx/neox-doctrine-secure-bundle:0.*
+  composer require xorgxx/neox-doctrine-secure-bundle:0.* or dev-master
 ````
 🚨 You will heva to add in your project. 🚨
 ````
@@ -28,6 +28,8 @@ Install the bundle for Composer !! as is still on beta version !!
   # standalone = "buit-in" only type string 255, text 
   # external   = this mode will externalize data in one entity (TODO : redis )
   NEOX_ENCRY_DSN=standalone://redis
+  NEOX_ENCRY_SALT="**@#$#*#&%&@$&^@"    # 16 bit
+  NEOX_ENCRY_PWS="03~é][a6{1;a7a^e2d"   # password your want (more long, more secure, more time to process)
   ....
 ````
 neox_doctrine_secure.yaml file
