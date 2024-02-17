@@ -81,7 +81,8 @@ Consider the size / length of field you want to crypt !! ex: length:10
   
 ````
 ## Tools power
-Occasionally, we may require access to a full range of data (4000 lines or more) for various checks or analyses. However, waiting for hours due to the conversion of encrypted data is not desirable. In such cases, disabling the EventListener is imperative.````
+Occasionally, we may require access to a full range of data (4000 lines or more) for various checks or analyses. However, waiting for hours due to the conversion of encrypted data is not desirable. In such cases, disabling the EventListener is imperative.
+````
   use NeoxDoctrineSecure\NeoxDoctrineSecureBundle\Pattern\NeoxDoctrineTools;
   ...
   // this will stop eventlistener to decrypt
