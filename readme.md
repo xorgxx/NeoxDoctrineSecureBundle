@@ -1,3 +1,9 @@
+## THIS PROJECT WILL BE REMOVED DO USE IN PROD !!! 
+We will refactor all code in same thing more optimize; an idea is to be more clear
+##
+##
+
+=================================!!!!!!!==================================
 
 # NeoxDoctrineSecureBundle { Symfony 6/7 } 
 This bundle provides Encrypt/Decrypt data sensible in a Db system in your application.
